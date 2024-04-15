@@ -11,22 +11,6 @@ Original file is located at
 # %pip install pybaseball
 # %pip install --upgrade ipykernel
 
-import pybaseball as pb
-from pybaseball import statcast
-
-import numpy as np
-import pandas as pd
-
-pb.cache.enable()
-
-data = statcast(start_dt="2023-03-30", end_dt="2023-11-01")
-
-test = data[['pitch_type', 'release_speed', 'release_pos_x', 'release_pos_z', 'p_throws', 'pfx_x', 'pfx_z', 'plate_x', 'plate_z']]
-
-test = test.sort_values(by = ['pitch_type'])
-
-pitchSet = set(['CH','CU','FC','EP','FO','FF','KN','KC','SC','SI','SL','SV','FS','ST'])
-
 # Commented out IPython magic to ensure Python compatibility.
 # %pip install Cmake
 # %pip install wheel
@@ -35,3 +19,47 @@ pitchSet = set(['CH','CU','FC','EP','FO','FF','KN','KC','SC','SI','SL','SV','FS'
 !pip3 uninstall --yes torch torchaudio torchvision torchtext torchdata
 !pip3 install torch torchaudio torchvision torchtext torchdata
 
+import torch
+import torch.nn as nn
+import torch.optim as optim
+from torch.utils.data import Dataset, DataLoader
+
+import pybaseball as pb
+from pybaseball import statcast
+
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+
+pb.cache.enable()
+
+data = statcast(start_dt="2023-03-30", end_dt="2023-11-01")
+
+dataframe = data[['pitch_type', 'release_speed', 'release_pos_x', 'release_pos_z', 'p_throws', 'pfx_x', 'pfx_z', 'plate_x', 'plate_z']]
+
+dataframe = dataframe.sort_values(by = ['pitch_type'])
+
+pitchSet = set(['CH','CU','FC','EP','FO','FF','KN','KC','SC','SI','SL','SV','FS','ST'])
+
+class PitchDataset(Dataset):
+
+  def __init__(self, dataframe):
+    self.pitch_type = dataframe['pitch_type']
+
+  def __len__(self):
+    pass
+
+  def __getitem__(self, index):
+    return
+
+
+dataframe['pitch_type'], labels = pd.Series(dataframe['pitch_type']).factorize()
+
+#dataframe['pitch_type'], labels = pd.factorize(dataframe['pitch_type'])
+#dataframe['pitch_type'] += 1
+
+print(labels)
+
+print(dataframe)
+
+print(dataframe.pitch_type.unique())

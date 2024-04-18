@@ -37,8 +37,6 @@ data = statcast(start_dt="2023-03-30", end_dt="2023-11-01")
 
 dataframe = data[['pitch_type', 'release_speed', 'release_pos_x', 'release_pos_z', 'p_throws', 'pfx_x', 'pfx_z', 'plate_x', 'plate_z']]
 
-dataframe = dataframe.sort_values(by = ['pitch_type'])
-
 pitchSet = set(['CH','CU','FC','EP','FO','FF','KN','KC','SC','SI','SL','SV','FS','ST'])
 
 class PitchDataset(Dataset):
@@ -52,14 +50,20 @@ class PitchDataset(Dataset):
   def __getitem__(self, index):
     return
 
+dataframe = dataframe.sort_values(by = ['pitch_type'])
+dataframe['pitch_type'] = dataframe['pitch_type'].astype('category')
+pitch_dict = dict(zip(dataframe.pitch_type.cat.codes, dataframe.pitch_type))
+dataframe['pitch_type'] = pd.factorize(dataframe['pitch_type'])[0]
+dataframe = dataframe[dataframe.pitch_type != -1]
 
-dataframe['pitch_type'], labels = pd.Series(dataframe['pitch_type']).factorize()
+dataframe = dataframe.sort_values(by = ['p_throws'])
+dataframe['p_throws'] = dataframe['p_throws'].astype('category')
+p_throws_dict = dict(zip(dataframe.p_throws.cat.codes, dataframe.p_throws))
+dataframe['p_throws'] = pd.factorize(dataframe['p_throws'])[0]
 
-#dataframe['pitch_type'], labels = pd.factorize(dataframe['pitch_type'])
-#dataframe['pitch_type'] += 1
+print(p_throws_dict)
 
-print(labels)
+print(pitch_dict)
 
 print(dataframe)
-
-print(dataframe.pitch_type.unique())
+#print(dataframe.pitch_type.unique())
